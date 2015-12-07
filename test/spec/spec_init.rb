@@ -1,4 +1,4 @@
-require_relative "../test_init"
+require_relative '../test_init'
 
-require "minitest"
-require "minitest-spec-context"
+require 'minitest'
+require 'minitest-spec-context'

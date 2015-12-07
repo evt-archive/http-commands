@@ -3,9 +3,10 @@ require 'tmpdir'
 
 class Server < WEBrick::HTTPServlet::AbstractServlet
   def self.start
-    server = WEBrick::HTTPServer.new :Port => 8000, :DocumentRoot => Dir.tmpdir
+    port = ENV['TEST_SERVER_PORT'] || 8000
+    server = WEBrick::HTTPServer.new :Port => port.to_i, :DocumentRoot => Dir.tmpdir
 
-    server.mount '/', self
+    server.mount '/some-resource', self
 
     trap 'INT' do server.shutdown end
 
@@ -20,6 +21,7 @@ class Server < WEBrick::HTTPServlet::AbstractServlet
 
   def do_POST(request, response)
     response.status = 201
+    response.body = request.body.upcase
   end
 end
 

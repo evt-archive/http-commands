@@ -2,28 +2,31 @@ module HTTP
   module Commands
     class Post
       attr_reader :body
-      attr_reader :origin
+      attr_reader :host
+      attr_reader :resource_target
 
       dependency :connection, Connection::Client
       dependency :logger
 
-      def initialize(body, origin)
+      def initialize(body, host, resource_target)
         @body = body
-        @origin = origin
+        @host = host
+        @resource_target = resource_target
       end
 
       def self.build(body, uri, connection: nil)
         uri = URI(uri)
 
-        origin = uri.request_uri
+        resource_target = uri.request_uri
+        host = uri.host
 
-        new(body, origin).tap do |instance|
+        new(body, host, resource_target).tap do |instance|
           Telemetry::Logger.configure instance
 
-          unless connection
-            Connect.configure_connection instance, uri
-          else
+          if connection
             instance.connection = connection
+          else
+            Connect.configure_connection instance, uri
           end
         end
       end
@@ -34,9 +37,55 @@ module HTTP
       end
 
       def call
-        response = OpenStruct.new
-        response.status_code = 200
-        response
+        request = HTTP::Protocol::Request.new 'POST', resource_target
+        request['Host'] = host
+        request['Content-Length'] = length
+
+        logger.trace "Writing Request (Size: #{length})"
+        logger.data request
+        logger.data body
+
+        connection.write request
+        connection.write body
+
+        logger.debug "Wrote Request (Size: #{length})"
+
+        logger.trace 'Reading Response'
+        response_builder = HTTP::Protocol::Response::Builder.build
+        response_builder << connection.readline until response_builder.finished_headers?
+
+        response = response_builder.message
+        content_length = response['Content-Length'].to_i
+
+        logger.debug "Read Response (Status: #{response.status_code}, Length: #{content_length.inspect})"
+        unless content_length.zero?
+          body = connection.read content_length
+        end
+        logger.data response
+
+        Response.new response, body
+      end
+
+      def length
+        body.bytesize
+      end
+
+      class Response
+        attr_reader :body
+        attr_reader :response
+
+        def initialize(response, body)
+          @body = body
+          @response = response
+        end
+
+        def method_missing(method_name, *arguments, &block)
+          response.public_send method_name, *arguments, &block
+        end
+
+        def respond_to?(method_name)
+          super || response.respond_to?(method_name)
+        end
       end
     end
   end

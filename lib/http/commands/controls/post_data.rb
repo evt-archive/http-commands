@@ -4,7 +4,7 @@ module HTTP
       module Post
         module Data
           def self.text
-            "some text"
+            'some text'
           end
         end
       end
