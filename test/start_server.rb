@@ -6,7 +6,7 @@ class Server < WEBrick::HTTPServlet::AbstractServlet
     port = ENV['TEST_SERVER_PORT'] || 8000
     server = WEBrick::HTTPServer.new :Port => port.to_i, :DocumentRoot => Dir.tmpdir
 
-    server.mount '/some-resource', self
+    server.mount '/', self
 
     trap 'INT' do server.shutdown end
 
@@ -21,7 +21,10 @@ class Server < WEBrick::HTTPServlet::AbstractServlet
 
   def do_POST(request, response)
     response.status = 201
-    response.body = request.body.upcase
+
+    if request.path == '/upcase'
+      response.body = request.body.upcase
+    end
   end
 end
 
