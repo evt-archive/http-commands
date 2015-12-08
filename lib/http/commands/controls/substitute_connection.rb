@@ -27,7 +27,7 @@ module HTTP
         end
 
         def readline(*arguments)
-          response.readline(*arguments)
+          response.readline *arguments
         end
 
         def request
@@ -45,7 +45,7 @@ module HTTP
         end
 
         def read(*arguments)
-          response.read(*arguments)
+          response.read *arguments
         end
 
         def write(*arguments)
