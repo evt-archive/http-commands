@@ -1,5 +1,3 @@
-require 'ostruct'
-
 require_relative './spec_init'
 
 describe 'Post' do
