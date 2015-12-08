@@ -4,6 +4,7 @@ module HTTP
       module Connections
         def self.get
           uri = 'http://www.example.com/some-path'
+          response_body = Controls::Data.example
 
           expected_request = <<-EXPECTED_REQUEST
 GET /some-path HTTP/1.1\r
@@ -11,26 +12,26 @@ Host: www.example.com\r
 \r
           EXPECTED_REQUEST
 
-          connection = SubstituteConnection.build expected_request, <<-RESPONSE
+          connection = SubstituteConnection.build expected_request, <<-RESPONSE.chomp("\n")
 HTTP/1.1 200 OK\r
-Content-Length: 9\r
+Content-Length: #{response_body.bytesize}\r
 \r
-some-text
+#{response_body}
           RESPONSE
 
-          return connection, uri
+          return connection, response_body, uri
         end
 
         def self.post(response_body=nil)
           uri = 'http://www.example.com/some-path'
-          body = 'some-text'
+          request_body = Controls::Data.example
 
           expected_request = <<-EXPECTED_REQUEST.chomp("\n")
 POST /some-path HTTP/1.1\r
 Host: www.example.com\r
-Content-Length: #{body.bytesize}\r
+Content-Length: #{request_body.bytesize}\r
 \r
-#{body}
+#{request_body}
           EXPECTED_REQUEST
 
           if response_body
@@ -49,7 +50,7 @@ HTTP/1.1 201 Created\r
 
           connection = SubstituteConnection.build expected_request, response
 
-          return connection, body, uri
+          return connection, request_body, uri
         end
       end
     end
