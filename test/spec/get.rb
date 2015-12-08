@@ -2,12 +2,11 @@ require_relative './spec_init'
 
 describe 'Get' do
   specify do
-    expected_body = HTTP::Commands::Controls::Get::Data.text
-    uri = HTTP::Commands::Controls::URI.example
+    connection, uri = HTTP::Commands::Controls::Connections.get
+    response = HTTP::Commands::Get.(uri, connection: connection)
 
-    response = HTTP::Commands::Get.(uri)
-
+    assert connection.verify_request
     assert response.status_code == 200
-    assert response.body == expected_body
+    assert response.body == 'some-text'
   end
 end
