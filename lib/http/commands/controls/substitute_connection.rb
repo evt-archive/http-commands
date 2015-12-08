@@ -2,8 +2,6 @@ module HTTP
   module Commands
     module Controls
       class SubstituteConnection
-        include Minitest::Assertions
-
         attr_reader :expected_request
         attr_reader :response
 
@@ -35,13 +33,7 @@ module HTTP
         end
 
         def verify_request
-          return true if expected_request == actual_request
-
-          diff = self.diff expected_request, actual_request
-          logger.fail 'Request data did not match expected data:'
-          logger.fail diff
-
-          false
+          expected_request == actual_request
         end
 
         def read(*arguments)
