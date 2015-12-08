@@ -36,10 +36,10 @@ module HTTP
 
         logger.trace "Send Request (Resource: #{target.inspect}, Size: #{length})"
         logger.data request
-        logger.data body
+        logger.data body if body
 
         connection.write request
-        connection.write body
+        connection.write body if body
 
         logger.debug "Sent Request (Resource: #{target.inspect}, Size: #{length})"
       end

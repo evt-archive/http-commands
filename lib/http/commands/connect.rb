@@ -3,31 +3,52 @@ module HTTP
     class Connect
       attr_reader :host
       attr_reader :port
-      attr_reader :ssl
+      attr_reader :ssl_context
 
-      def initialize(host, port, ssl)
+      def initialize(host, port, ssl_context)
         @host = host
         @port = port
-        @ssl = ssl
+        @ssl_context = ssl_context
       end
 
-      def self.build(uri)
+      def self.build(uri, verify_certs: nil)
+        verify_certs = true if verify_certs.nil?
+
         host = uri.host
         port = uri.port
-        ssl = (uri.scheme == 'https')
 
-        new(host, port, ssl)
+        if uri.scheme == 'https'
+          ssl_context = self.ssl_context verify_certs
+        end
+
+        new(host, port, ssl_context)
       end
 
       def self.configure_connection(receiver, uri)
-        instance = build(uri)
-        connection = instance.connect
+        connection = self.(uri)
         receiver.connection = connection
         connection
       end
 
-      def connect
-        TCPSocket.new(host, port)
+      def self.ssl_context(verify_certs)
+        ssl_context = OpenSSL::SSL::SSLContext.new
+
+        if verify_certs
+          ssl_context.set_params verify_mode: OpenSSL::SSL::VERIFY_PEER
+        else
+          ssl_context.set_params verify_mode: OpenSSL::SSL::VERIFY_NONE
+        end
+
+        ssl_context
+      end
+
+      def connect(scheduler=nil)
+        Connection.client(
+          host,
+          port,
+          scheduler: scheduler,
+          ssl_context: ssl_context
+        )
       end
     end
   end
