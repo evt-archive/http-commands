@@ -47,12 +47,7 @@ module HTTP
 
           logger.trace "Receiving Request (Port: #{port.inspect})"
           request_builder = HTTP::Protocol::Request::Builder.build
-          until request_builder.finished_headers?
-            logger.focus "About to Readline"
-            line = client_connection.readline
-            request_builder << line
-            logger.focus "Header (Line: #{line.inspect})"
-          end
+          request_builder << client_connection.readline until request_builder.finished_headers?
           request = request_builder.message
           content_length = request['Content-Length'].to_i
           client_connection.read content_length

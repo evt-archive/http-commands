@@ -25,7 +25,8 @@ module HTTP
       end
 
       def self.configure_connection(receiver, uri)
-        connection = self.(uri)
+        instance = self.build uri
+        connection = instance.connect
         receiver.connection = connection
         connection
       end

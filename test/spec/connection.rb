@@ -36,4 +36,9 @@ describe 'Connection' do
       assert response.body == 'some-text'
     end
   end
+
+  specify 'Establishing Connection Internally' do
+    response = HTTP::Commands::Get.("https://www.google.com")
+    assert response.status_code == 200
+  end
 end
