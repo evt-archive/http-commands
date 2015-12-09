@@ -27,6 +27,7 @@ module HTTP
       def call
         send_request
         response, body = receive_response
+        connection.close if response['Connection'] == 'close'
         Response.new response, body
       end
 

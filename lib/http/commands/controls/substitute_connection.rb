@@ -4,6 +4,7 @@ module HTTP
       class SubstituteConnection
         attr_reader :expected_request
         attr_reader :response
+        attr_accessor :closed
 
         dependency :logger, Telemetry::Logger
 
@@ -22,6 +23,14 @@ module HTTP
 
         def actual_request
           request.string
+        end
+
+        def close
+          self.closed = true
+        end
+
+        def closed?
+          closed
         end
 
         def readline(*arguments)

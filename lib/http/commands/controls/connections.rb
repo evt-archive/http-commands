@@ -4,7 +4,7 @@ module HTTP
       module Connections
         extend self
 
-        def get
+        def get(response_headers=nil)
           uri = 'http://www.example.com/some-path'
           response_body = Controls::Data.text
 
@@ -14,10 +14,17 @@ Host: www.example.com\r
 \r
           EXPECTED_REQUEST
 
+          response_headers ||= {}
+          response_headers['Content-Length'] = response_body.bytesize
+
+          headers = response_headers.reduce '' do |string, (field_name, field_value)|
+            string << "#{field_name}: #{field_value}\r\n"
+          end
+
           connection = SubstituteConnection.build expected_request, <<-RESPONSE.chomp("\n")
 HTTP/1.1 200 OK\r
 Content-Length: #{response_body.bytesize}\r
-\r
+#{headers}\r
 #{response_body}
           RESPONSE
 

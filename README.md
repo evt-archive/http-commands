@@ -33,3 +33,18 @@ You can pass in a connection instead of having the library establish one using t
 connection = TCPSocket.new '127.0.0.1', 8080
 HTTP::Commands::Get.('http://www.example.com', connection: connection)
 ```
+
+This is also how you support persistent HTTP connections. `HTTP::Commands` will close the connection for you when the server indicates the client must establish a new connection (e.g. via a `Connection: close` header).
+
+```ruby
+def connection
+  @connection ||= HTTP::Commands::Connect.('127.0.0.1, 8080)
+end
+
+def get
+  HTTP::Commands::Get.('http://www.example.com', connection: connection)
+
+  # Reset connection to nil, causing it to reconnect next time it's used
+  @connection = nil if connection.closed?
+end
+```
