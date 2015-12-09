@@ -9,8 +9,7 @@ describe 'Connection' do
         :port => port
       )
 
-      command = HTTP::Commands::Connect.build uri
-      connection = command.connect scheduler
+      connection = HTTP::Commands::Connect.(uri, scheduler: scheduler)
 
       response = HTTP::Commands::Get.(uri, connection: connection)
 
@@ -27,8 +26,11 @@ describe 'Connection' do
         :port => port
       )
 
-      command = HTTP::Commands::Connect.build uri, verify_certs: false
-      connection = command.connect scheduler
+      connection = HTTP::Commands::Connect.(
+        uri,
+        scheduler: scheduler,
+        verify_certs: false
+      )
 
       response = HTTP::Commands::Get.(uri, connection: connection)
 

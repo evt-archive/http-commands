@@ -3,15 +3,17 @@ module HTTP
     class Connect
       attr_reader :host
       attr_reader :port
+      attr_reader :scheduler
       attr_reader :ssl_context
 
-      def initialize(host, port, ssl_context)
+      def initialize(host, port, ssl_context, scheduler=nil)
         @host = host
         @port = port
         @ssl_context = ssl_context
+        @scheduler = scheduler
       end
 
-      def self.build(uri, verify_certs: nil)
+      def self.build(uri, scheduler: nil, verify_certs: nil)
         verify_certs = true if verify_certs.nil?
 
         host = uri.host
@@ -21,7 +23,7 @@ module HTTP
           ssl_context = self.ssl_context verify_certs
         end
 
-        new(host, port, ssl_context)
+        new(host, port, ssl_context, scheduler)
       end
 
       def self.call(*arguments)
@@ -30,8 +32,7 @@ module HTTP
       end
 
       def self.configure_connection(receiver, uri)
-        instance = self.build uri
-        connection = instance.connect
+        connection = self.(uri)
         receiver.connection = connection
         connection
       end
@@ -48,7 +49,7 @@ module HTTP
         ssl_context
       end
 
-      def connect(scheduler=nil)
+      def call
         connection = PersistentConnection.build(host, port, ssl_context)
         connection.scheduler = scheduler if scheduler
         connection
