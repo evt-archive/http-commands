@@ -21,4 +21,19 @@ describe 'Post' do
     assert response.status_code == 201
     assert response.body == response_body
   end
+
+  specify 'Supplying Headers' do
+    connection, request_body, uri = HTTP::Commands::Controls::Connections.post_json
+
+    response = HTTP::Commands::Post.(
+      request_body,
+      uri,
+      'Content-Type' => 'application/json',
+      connection: connection
+    )
+
+    assert connection.verify_request
+    assert response.status_code == 201
+    refute response.body
+  end
 end

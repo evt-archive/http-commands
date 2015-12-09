@@ -9,9 +9,10 @@ module HTTP
 
       dependency :logger, Telemetry::Logger
 
-      def initialize(connection, action, host, target, body=nil)
+      def initialize(connection, action, host, target, body: nil, headers: nil)
         @action = action
         @body = body
+        @headers = headers
         @host = host
         @connection = connection
         @target = target
@@ -29,10 +30,18 @@ module HTTP
         Response.new response, body
       end
 
+      def headers
+        @headers ||= {}
+      end
+
       def send_request
         request = HTTP::Protocol::Request.new action, target
         request['Host'] = host
         request['Content-Length'] = length
+
+        headers.each do |field_name, field_value|
+          request[field_name] = field_value
+        end
 
         logger.trace "Send Request (Resource: #{target.inspect}, Size: #{length})"
         logger.data request
