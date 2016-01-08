@@ -1,25 +1,33 @@
 require_relative './spec_init'
 
 describe 'Get' do
-  specify do
-    connection, response_body, uri = HTTP::Commands::Controls::Connections.get
-    response = HTTP::Commands::Get.(uri, connection: connection)
+  host = HTTP::Commands::Controls::Messages::Requests.host
+  resource_target = HTTP::Commands::Controls::Messages::Requests.resource_target
 
-    assert connection.verify_request
+  specify do
+    expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Get.example
+
+    get = HTTP::Commands::Get.new host, resource_target, {}
+    get.connection.expect_write expected_request
+    get.connection.expect_read expected_response
+
+    response = get.()
+
     assert response.status_code == 200
-    assert response.body == response_body
+    assert response.body == 'some-message'
   end
 
   specify 'Supplying Headers' do
-    connection, response_body, uri = HTTP::Commands::Controls::Connections.get_json
-    response = HTTP::Commands::Get.(
-      uri,
-      'Accept' => 'application/json',
-      connection: connection
-    )
+    expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Get::JSON.example
+    headers = { 'Accept' => 'application/json' }
 
-    assert connection.verify_request
+    get = HTTP::Commands::Get.new host, resource_target, headers
+    get.connection.expect_write expected_request
+    get.connection.expect_read expected_response
+
+    response = get.()
+
     assert response.status_code == 200
-    assert response.body == response_body
+    assert JSON.parse(response.body)['some-key'] == 'some-value'
   end
 end
