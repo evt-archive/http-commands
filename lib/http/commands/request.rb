@@ -38,20 +38,20 @@ module HTTP
       def send_request
         request = HTTP::Protocol::Request.new action, target
         request['Host'] = host
-        request['Content-Length'] = length
+        request['Content-Length'] = request_message_length
 
         headers.each do |field_name, field_value|
           request[field_name] = field_value
         end
 
-        logger.trace "Send Request (Resource: #{target.inspect}, Size: #{length})"
+        logger.trace "Send Request (Resource: #{target.inspect}, Message Length: #{request_message_length.inspect})"
         logger.data request
         logger.data body if body
 
         connection.write request
         connection.write body if body
 
-        logger.debug "Sent Request (Resource: #{target.inspect}, Size: #{length})"
+        logger.debug "Sent Request (Resource: #{target.inspect}, Message Length: #{request_message_length.inspect})"
       end
 
       def receive_response
@@ -64,7 +64,7 @@ module HTTP
 
         content_length = response['Content-Length'].to_i
 
-        logger.debug "Received Response (Status: #{response.status_code}, Length: #{content_length.inspect}, Resource: #{target.inspect})"
+        logger.debug "Received Response (Status: #{response.status_code}, Content Length: #{content_length.inspect}, Resource: #{target.inspect})"
         unless content_length.zero?
           body = connection.read content_length
         end
@@ -73,9 +73,9 @@ module HTTP
         return response, body
       end
 
-      def length
+      def request_message_length
         return unless body
-        body.bytesize
+        Commands.content_length(body)
       end
     end
   end

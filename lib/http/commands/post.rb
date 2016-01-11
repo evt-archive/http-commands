@@ -49,10 +49,6 @@ module HTTP
         )
         request.()
       end
-
-      def length
-        body.bytesize
-      end
     end
   end
 end

@@ -18,7 +18,7 @@ Connection: close\r
 
               <<-HTTP.chomp
 HTTP/1.1 200 Ok\r
-Content-Length: #{body.bytesize}\r
+Content-Length: #{Commands.content_length(body)}\r
 \r
 #{body}
               HTTP
@@ -31,7 +31,7 @@ Content-Length: #{body.bytesize}\r
 
                 <<-HTTP.chomp
 HTTP/1.1 200 Ok\r
-Content-Length: #{body.bytesize}\r
+Content-Length: #{Commands.content_length(body)}\r
 \r
 #{body}
               HTTP
@@ -44,7 +44,7 @@ Content-Length: #{body.bytesize}\r
               if response_body
                 <<-HTTP.chomp
 HTTP/1.1 201 Created\r
-Content-Length: #{response_body.bytesize}\r
+Content-Length: #{Commands.content_length(response_body)}\r
 \r
 #{response_body}
                 HTTP
