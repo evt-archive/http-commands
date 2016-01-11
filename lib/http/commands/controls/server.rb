@@ -32,7 +32,7 @@ module HTTP
             server = build
           end
 
-          RunServer.(server, &block)
+          Run.(server, &block)
         end
 
         def start
