@@ -1,7 +1,6 @@
 module HTTP
   module Commands
-    class Post
-      attr_reader :body
+    class Get
       attr_reader :headers
       attr_reader :host
       attr_reader :resource_target
@@ -9,20 +8,19 @@ module HTTP
       dependency :connection, Connection::Client
       dependency :logger
 
-      def initialize(body, host, resource_target, headers)
-        @body = body
+      def initialize(host, resource_target, headers)
         @headers = headers
         @host = host
         @resource_target = resource_target
       end
 
-      def self.build(body, uri, headers={}, connection: nil)
+      def self.build(uri, headers={}, connection: nil)
         uri = URI(uri)
 
         resource_target = uri.request_uri
         host = uri.host
 
-        new(body, host, resource_target, headers).tap do |instance|
+        new(host, resource_target, headers).tap do |instance|
           Telemetry::Logger.configure instance
 
           if connection
@@ -41,10 +39,9 @@ module HTTP
       def call
         request = Request.build(
           connection,
-          'POST',
+          'GET',
           host,
           resource_target,
-          body: body,
           headers: headers
         )
         request.()
