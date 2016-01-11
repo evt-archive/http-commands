@@ -39,7 +39,7 @@ Accept: application/json\r
               <<-HTTP.chomp
 POST /resource-target HTTP/1.1\r
 Host: www.example.com\r
-Content-Length: #{body.bytesize}\r
+Content-Length: #{Commands.content_length(body)}\r
 \r
 #{body}
               HTTP

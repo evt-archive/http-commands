@@ -14,6 +14,16 @@ module HTTP
           def self.text
             example
           end
+
+          module Multibyte
+            def self.example
+              'some-messagé'
+            end
+
+            def self.length
+              example.bytesize
+            end
+          end
         end
       end
     end
