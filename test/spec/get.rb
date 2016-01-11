@@ -5,7 +5,8 @@ describe 'Get' do
   resource_target = HTTP::Commands::Controls::Messages::Requests.resource_target
 
   specify do
-    expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Get.example
+    resource = HTTP::Commands::Controls::Messages::Resources.text
+    expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Get.example resource
 
     get = HTTP::Commands::Get.new host, resource_target, {}
     get.connection.expect_write expected_request
@@ -14,11 +15,12 @@ describe 'Get' do
     response = get.()
 
     assert response.status_code == 200
-    assert response.body == 'some-message'
+    assert response.body == resource
   end
 
   specify 'Supplying Headers' do
-    expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Get::JSON.example
+    resource = HTTP::Commands::Controls::Messages::Resources.json
+    expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Get::JSON.example resource
     headers = { 'Accept' => 'application/json' }
 
     get = HTTP::Commands::Get.new host, resource_target, headers
@@ -28,6 +30,6 @@ describe 'Get' do
     response = get.()
 
     assert response.status_code == 200
-    assert JSON.parse(response.body)['some-key'] == 'some-value'
+    assert JSON.parse(response.body) == resource
   end
 end

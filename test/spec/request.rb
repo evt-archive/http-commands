@@ -1,31 +1,30 @@
 require_relative './spec_init'
 
 describe 'Request' do
+  host = HTTP::Commands::Controls::Messages::Requests.host
+  resource_target = HTTP::Commands::Controls::Messages::Requests.resource_target
+
   specify 'Leaving the Connection Open' do
-    connection, response_body, uri = HTTP::Commands::Controls::Connections.get
-    request = HTTP::Commands::Request.build(
-      connection,
-      'GET',
-      'www.example.com',
-      '/some-path'
-    )
+    expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Get.example
 
-    request.()
+    get = HTTP::Commands::Get.new host, resource_target, {}
+    get.connection.expect_write expected_request
+    get.connection.expect_read expected_response
 
-    refute connection.closed?
+    get.()
+
+    refute get.connection.closed?
   end
 
   specify "Closing the Connection at Server's Request" do
-    connection, response_body, uri = HTTP::Commands::Controls::Connections.get('Connection' => 'close')
-    request = HTTP::Commands::Request.build(
-      connection,
-      'GET',
-      'www.example.com',
-      '/some-path'
-    )
+    expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Get.connection_closed
 
-    request.()
+    get = HTTP::Commands::Get.new host, resource_target, {}
+    get.connection.expect_write expected_request
+    get.connection.expect_read expected_response
 
-    assert connection.closed?
+    get.()
+
+    assert get.connection.closed?
   end
 end

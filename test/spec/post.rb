@@ -1,39 +1,53 @@
 require_relative './spec_init'
 
 describe 'Post' do
+  host = HTTP::Commands::Controls::Messages::Requests.host
+  resource_target = HTTP::Commands::Controls::Messages::Requests.resource_target
+
   specify 'Without Response Body' do
-    connection, request_body, uri = HTTP::Commands::Controls::Connections.post
+    request_body = HTTP::Commands::Controls::Messages::Resources.example
+    expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Post.example request_body
 
-    response = HTTP::Commands::Post.(request_body, uri, connection: connection)
+    post = HTTP::Commands::Post.new request_body, host, resource_target, {}
+    post.connection.expect_write expected_request
+    post.connection.expect_read expected_response
 
-    assert connection.verify_request
+    response = post.()
+
     assert response.status_code == 201
-    refute response.body
+    assert response.body.nil?
   end
 
   specify 'With Response Body' do
+    request_body = 'some-request'
     response_body = 'some-response'
-    connection, request_body, uri = HTTP::Commands::Controls::Connections.post response_body
 
-    response = HTTP::Commands::Post.(request_body, uri, connection: connection)
+    expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Post.example request_body, response_body
 
-    assert connection.verify_request
+    post = HTTP::Commands::Post.new request_body, host, resource_target, {}
+    post.connection.expect_write expected_request
+    post.connection.expect_read expected_response
+
+    response = post.()
+
     assert response.status_code == 201
     assert response.body == response_body
   end
 
   specify 'Supplying Headers' do
-    connection, request_body, uri = HTTP::Commands::Controls::Connections.post_json
+    headers = { 'Content-Type' => 'application/json' }
 
-    response = HTTP::Commands::Post.(
-      request_body,
-      uri,
-      'Content-Type' => 'application/json',
-      connection: connection
-    )
+    resource = HTTP::Commands::Controls::Messages::Resources.json
+    request_body = JSON.pretty_generate resource
+    expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Post::JSON.example resource
 
-    assert connection.verify_request
+    post = HTTP::Commands::Post.new request_body, host, resource_target, headers
+    post.connection.expect_write expected_request
+    post.connection.expect_read expected_response
+
+    response = post.()
+
     assert response.status_code == 201
-    refute response.body
+    assert response.body.nil?
   end
 end
