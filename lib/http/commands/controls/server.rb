@@ -14,8 +14,8 @@ module HTTP
           @ssl_context = ssl_context
         end
 
-        def self.build(port=nil, ssl_context: nil)
-          port ||= 8000
+        def self.build(ssl_context: nil)
+          port = 8000
 
           instance = new port, ssl_context
           Telemetry::Logger.configure instance
