@@ -1,5 +1,4 @@
 require 'controls'
-require 'process_host'
 
 require 'connection/controls'
 
