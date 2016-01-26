@@ -32,7 +32,7 @@ module HTTP
       end
 
       def call
-        Connection.client(
+        Connection::Client.build(
           host,
           port,
           scheduler: scheduler,
