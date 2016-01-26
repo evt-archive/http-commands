@@ -31,6 +31,15 @@ module HTTP
         instance.()
       end
 
+      def call
+        Connection.client(
+          host,
+          port,
+          scheduler: scheduler,
+          ssl: ssl_context
+        )
+      end
+
       def self.configure_connection(receiver, uri)
         connection = self.(uri)
         receiver.connection = connection
@@ -47,12 +56,6 @@ module HTTP
         end
 
         ssl_context
-      end
-
-      def call
-        connection = PersistentConnection.build(host, port, ssl_context)
-        connection.scheduler = scheduler if scheduler
-        connection
       end
     end
   end
