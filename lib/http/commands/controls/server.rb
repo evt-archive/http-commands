@@ -36,26 +36,26 @@ module HTTP
         end
 
         def start
-          logger.trace "Waiting for Client (Port: #{port.inspect})"
+          logger.opt_trace "Waiting for Client (Port: #{port.inspect})"
           client_connection = server_connection.accept
-          logger.debug "Client Connected (Port: #{port.inspect})"
+          logger.opt_debug "Client Connected (Port: #{port.inspect})"
 
-          logger.trace "Receiving Request (Port: #{port.inspect})"
+          logger.opt_trace "Receiving Request (Port: #{port.inspect})"
           request_builder = HTTP::Protocol::Request::Builder.build
           request_builder << client_connection.readline until request_builder.finished_headers?
           request = request_builder.message
           content_length = request['Content-Length'].to_i
           client_connection.read content_length
-          logger.debug "Received Request (Action: #{request.action.inspect}, Length: #{content_length.inspect}, Port: #{port.inspect})"
-          logger.data request
+          logger.opt_debug "Received Request (Action: #{request.action.inspect}, Length: #{content_length.inspect}, Port: #{port.inspect})"
+          logger.opt_data request
 
-          logger.trace "Sending Response (Port: #{port.inspect})"
+          logger.opt_trace "Sending Response (Port: #{port.inspect})"
           response = HTTP::Protocol::Response.new '200', 'OK'
           response['Connection'] = 'close'
           response['Content-Length'] = 9
           client_connection.write response
           client_connection.write 'some-text'
-          logger.debug "Sent Response (Port: #{port.inspect})"
+          logger.opt_debug "Sent Response (Port: #{port.inspect})"
 
         ensure
           client_connection.close if client_connection

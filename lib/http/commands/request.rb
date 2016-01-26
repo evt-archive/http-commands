@@ -44,18 +44,18 @@ module HTTP
           request[field_name] = field_value
         end
 
-        logger.trace "Send Request (Resource: #{target.inspect}, Message Length: #{request_message_length.inspect})"
-        logger.data request
-        logger.data body if body
+        logger.opt_trace "Send Request (Resource: #{target.inspect}, Message Length: #{request_message_length.inspect})"
+        logger.opt_data request
+        logger.opt_data body if body
 
         connection.write request
         connection.write body if body
 
-        logger.debug "Sent Request (Resource: #{target.inspect}, Message Length: #{request_message_length.inspect})"
+        logger.opt_debug "Sent Request (Resource: #{target.inspect}, Message Length: #{request_message_length.inspect})"
       end
 
       def receive_response
-        logger.trace "Receiving Response (Resource: #{target.inspect})"
+        logger.opt_trace "Receiving Response (Resource: #{target.inspect})"
 
         response_builder = HTTP::Protocol::Response::Builder.build
         response_builder << connection.readline until response_builder.finished_headers?
@@ -64,11 +64,11 @@ module HTTP
 
         content_length = response['Content-Length'].to_i
 
-        logger.debug "Received Response (Status: #{response.status_code}, Content Length: #{content_length.inspect}, Resource: #{target.inspect})"
+        logger.opt_debug "Received Response (Status: #{response.status_code}, Content Length: #{content_length.inspect}, Resource: #{target.inspect})"
         unless content_length.zero?
           body = connection.read content_length
         end
-        logger.data response
+        logger.opt_data response
 
         return response, body
       end
