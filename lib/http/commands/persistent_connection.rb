@@ -35,7 +35,7 @@ module HTTP
           host,
           port,
           scheduler: scheduler,
-          ssl_context: ssl_context
+          ssl: ssl_context
         )
       end
 

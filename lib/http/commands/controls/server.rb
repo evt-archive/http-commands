@@ -26,7 +26,7 @@ module HTTP
           ssl ||= false
 
           if ssl
-            ssl_context = Connection::Controls::SSL.server_context
+            ssl_context = HTTP::Commands::Controls::SSL::Context::Server.example
             server = build ssl_context: ssl_context
           else
             server = build
