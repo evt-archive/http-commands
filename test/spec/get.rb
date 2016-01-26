@@ -1,10 +1,10 @@
 require_relative './spec_init'
 
-describe 'Get' do
+context 'Get' do
   host = HTTP::Commands::Controls::Messages::Requests.host
   resource_target = HTTP::Commands::Controls::Messages::Requests.resource_target
 
-  specify do
+  test do
     resource = HTTP::Commands::Controls::Messages::Resources.text
     expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Get.example resource
 
@@ -18,7 +18,7 @@ describe 'Get' do
     assert response.body == resource
   end
 
-  specify 'Supplying Headers' do
+  test 'Supplying Headers' do
     resource = HTTP::Commands::Controls::Messages::Resources.json
     expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Get::JSON.example resource
     headers = { 'Accept' => 'application/json' }

@@ -1,7 +1,7 @@
 require_relative './spec_init'
 
-describe 'Connection' do
-  specify 'Non SSL' do
+context 'Connection' do
+  test 'Non SSL' do
     HTTP::Commands::Controls::Server.run do |port, scheduler|
       uri = URI::HTTP.build(
         :host => 'localhost',
@@ -18,7 +18,7 @@ describe 'Connection' do
     end
   end
 
-  specify 'SSL' do
+  test 'SSL' do
     HTTP::Commands::Controls::Server.run ssl: true do |port, scheduler|
       uri = URI::HTTPS.build(
         :host => 'localhost',
@@ -39,7 +39,7 @@ describe 'Connection' do
     end
   end
 
-  specify 'Establishing Connection Internally' do
+  test 'Establishing Connection Internally' do
     response = HTTP::Commands::Get.("https://www.google.com")
     assert response.status_code == 200
   end
