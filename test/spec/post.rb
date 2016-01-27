@@ -1,10 +1,10 @@
 require_relative './spec_init'
 
-describe 'Post' do
+context 'Post' do
   host = HTTP::Commands::Controls::Messages::Requests.host
   resource_target = HTTP::Commands::Controls::Messages::Requests.resource_target
 
-  specify 'Without Response Body' do
+  test 'Without Response Body' do
     request_body = HTTP::Commands::Controls::Messages::Resources.example
     expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Post.example request_body
 
@@ -18,7 +18,7 @@ describe 'Post' do
     assert response.body.nil?
   end
 
-  specify 'With Response Body' do
+  test 'With Response Body' do
     request_body = 'some-request'
     response_body = 'some-response'
 
@@ -34,7 +34,7 @@ describe 'Post' do
     assert response.body == response_body
   end
 
-  specify 'Supplying Headers' do
+  test 'Supplying Headers' do
     headers = { 'Content-Type' => 'application/json' }
 
     resource = HTTP::Commands::Controls::Messages::Resources.json
