@@ -1,7 +1,7 @@
 require 'uri'
 
 require 'http/protocol'
-require 'connection'
+require 'connection/client'
 
 require 'http/commands/content_length'
 require 'http/commands/get'
