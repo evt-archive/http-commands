@@ -5,13 +5,10 @@ module HTTP
       attr_accessor :reason_phrase
       attr_accessor :status_code
 
-      def initialize(status_code, reason_phrase)
-        @reason_phrase = reason_phrase
-        @status_code = status_code
-      end
-
       def self.build(status_code, reason_phrase, response_body=nil)
-        instance = new status_code, reason_phrase
+        instance = new
+        instance.status_code = status_code
+        instance.reason_phrase = reason_phrase
         instance.response_body = response_body if response_body
         instance
       end
