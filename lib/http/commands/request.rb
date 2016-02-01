@@ -9,7 +9,7 @@ module HTTP
 
       dependency :logger, Telemetry::Logger
 
-      def initialize(connection, action, host, target, body: nil, headers: nil)
+      def initialize(connection, action, host, target, body, headers)
         @action = action
         @body = body
         @headers = headers
@@ -18,10 +18,15 @@ module HTTP
         @target = target
       end
 
-      def self.build(*arguments)
-        instance = new *arguments
+      def self.build(connection, action, host, target, body: nil, headers: nil)
+        instance = new connection, action, host, target, body, headers
         Telemetry::Logger.configure instance
         instance
+      end
+
+      def self.call(*arguments)
+        instance = build *arguments
+        instance.()
       end
 
       def call

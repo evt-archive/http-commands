@@ -11,6 +11,13 @@ module HTTP
             '/resource-target'
           end
 
+          def self.uri(scheme=nil)
+            scheme ||= 'HTTP'
+
+            cls = ::URI.const_get scheme
+            cls.build :host => host, :path => resource_target
+          end
+
           module Get
             def self.example
               <<-HTTP

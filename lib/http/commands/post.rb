@@ -1,45 +1,33 @@
 module HTTP
   module Commands
     class Post
-      attr_reader :body
-      attr_reader :headers
-      attr_reader :host
-      attr_reader :resource_target
+      attr_accessor :connection
 
-      dependency :connection, Connection::Client
-      dependency :logger
+      dependency :logger, Telemetry::Logger
 
-      def initialize(body, host, resource_target, headers)
-        @body = body
-        @headers = headers
-        @host = host
-        @resource_target = resource_target
+      def self.build(connection=nil)
+        new.tap do |instance|
+          Telemetry::Logger.configure instance
+
+          instance.connection = connection if connection
+        end
       end
 
-      def self.build(body, uri, headers={}, connection: nil)
+      def self.call(body, uri, headers=nil, connection: nil)
+        instance = build connection
+        instance.(body, uri, headers)
+      end
+
+      def call(body, uri, headers=nil)
+        headers ||= {}
+
         uri = URI(uri)
+        connection = self.connection || Connect.(uri)
 
         resource_target = uri.request_uri
         host = uri.host
 
-        new(body, host, resource_target, headers).tap do |instance|
-          Telemetry::Logger.configure instance
-
-          if connection
-            instance.connection = connection
-          else
-            Connect.configure_connection instance, uri
-          end
-        end
-      end
-
-      def self.call(*arguments)
-        instance = build(*arguments)
-        instance.()
-      end
-
-      def call
-        request = Request.build(
+        Request.(
           connection,
           'POST',
           host,
@@ -47,7 +35,6 @@ module HTTP
           body: body,
           headers: headers
         )
-        request.()
       end
     end
   end

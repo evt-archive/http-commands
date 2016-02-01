@@ -1,18 +1,17 @@
 require_relative './spec_init'
 
 context 'Get' do
-  host = HTTP::Commands::Controls::Messages::Requests.host
-  resource_target = HTTP::Commands::Controls::Messages::Requests.resource_target
+  uri = HTTP::Commands::Controls::Messages::Requests.uri
 
   test do
     resource = HTTP::Commands::Controls::Messages::Resources.text
     expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Get.example resource
+    connection = HTTP::Commands::Controls::Dialogs::Connection.example expected_request, expected_response
 
-    get = HTTP::Commands::Get.new host, resource_target, {}
-    get.connection.expect_write expected_request
-    get.connection.expect_read expected_response
+    get = HTTP::Commands::Get.new
+    get.connection = connection
 
-    response = get.()
+    response = get.(uri)
 
     assert response.status_code == 200
     assert response.body == resource
@@ -21,13 +20,12 @@ context 'Get' do
   test 'Supplying Headers' do
     resource = HTTP::Commands::Controls::Messages::Resources.json
     expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Get::JSON.example resource
-    headers = { 'Accept' => 'application/json' }
+    connection = HTTP::Commands::Controls::Dialogs::Connection.example expected_request, expected_response
 
-    get = HTTP::Commands::Get.new host, resource_target, headers
-    get.connection.expect_write expected_request
-    get.connection.expect_read expected_response
+    get = HTTP::Commands::Get.new
+    get.connection = connection
 
-    response = get.()
+    response = get.(uri, 'Accept' => 'application/json')
 
     assert response.status_code == 200
     assert JSON.parse(response.body) == resource
