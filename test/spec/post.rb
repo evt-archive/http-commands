@@ -56,4 +56,12 @@ context 'Post' do
 
     assert receiver.some_attr.is_a?(HTTP::Commands::Post)
   end
+
+  test "Substitute" do
+    substitute = SubstAttr::Substitute.build HTTP::Commands::Post
+
+    assert substitute.status_code == 201
+    assert substitute.reason_phrase == 'Created'
+    assert substitute.response_body.nil?
+  end
 end

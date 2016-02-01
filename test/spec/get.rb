@@ -38,4 +38,13 @@ context 'Get' do
 
     assert receiver.some_attr.is_a?(HTTP::Commands::Get)
   end
+
+  test "Substitute" do
+    substitute = SubstAttr::Substitute.build HTTP::Commands::Get
+    substitute.response_body = 'some-response'
+
+    assert substitute.status_code == 200
+    assert substitute.reason_phrase == 'OK'
+    assert substitute.response_body == 'some-response'
+  end
 end
