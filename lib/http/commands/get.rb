@@ -13,6 +13,14 @@ module HTTP
         end
       end
 
+      def self.configure(receiver, attr_name=nil, connection: nil)
+        attr_name ||= :get
+
+        instance = build connection
+        receiver.send "#{attr_name}=", instance
+        instance
+      end
+
       def self.call(uri, headers=nil, connection: nil)
         instance = build connection
         instance.(uri, headers)

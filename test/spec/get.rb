@@ -30,4 +30,12 @@ context 'Get' do
     assert response.status_code == 200
     assert JSON.parse(response.body) == resource
   end
+
+  test "Configuring" do
+    receiver = OpenStruct.new
+
+    HTTP::Commands::Get.configure receiver, :some_attr
+
+    assert receiver.some_attr.is_a?(HTTP::Commands::Get)
+  end
 end

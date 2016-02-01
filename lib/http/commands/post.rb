@@ -18,6 +18,14 @@ module HTTP
         instance.(body, uri, headers)
       end
 
+      def self.configure(receiver, attr_name=nil, connection: nil)
+        attr_name ||= :post
+
+        instance = build connection
+        receiver.send "#{attr_name}=", instance
+        instance
+      end
+
       def call(body, uri, headers=nil)
         headers ||= {}
 

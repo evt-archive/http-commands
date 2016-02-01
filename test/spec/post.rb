@@ -48,4 +48,12 @@ context 'Post' do
     assert response.status_code == 201
     assert response.body.nil?
   end
+
+  test "Configuring" do
+    receiver = OpenStruct.new
+
+    HTTP::Commands::Post.configure receiver, :some_attr
+
+    assert receiver.some_attr.is_a?(HTTP::Commands::Post)
+  end
 end
