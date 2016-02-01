@@ -58,10 +58,12 @@ context 'Post' do
   end
 
   test "Substitute" do
-    substitute = SubstAttr::Substitute.build HTTP::Commands::Post
+    substitute = HTTP::Commands::Post::Substitute.build
 
-    assert substitute.status_code == 201
-    assert substitute.reason_phrase == 'Created'
-    assert substitute.response_body.nil?
+    response = substitute.()
+
+    assert response.status_code == 201
+    assert response.reason_phrase == 'Created'
+    assert response.body.nil?
   end
 end

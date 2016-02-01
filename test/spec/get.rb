@@ -40,11 +40,13 @@ context 'Get' do
   end
 
   test "Substitute" do
-    substitute = SubstAttr::Substitute.build HTTP::Commands::Get
+    substitute = HTTP::Commands::Get::Substitute.build
     substitute.response_body = 'some-response'
 
-    assert substitute.status_code == 200
-    assert substitute.reason_phrase == 'OK'
-    assert substitute.response_body == 'some-response'
+    response = substitute.()
+
+    assert response.status_code == 200
+    assert response.reason_phrase == 'OK'
+    assert response.body == 'some-response'
   end
 end
