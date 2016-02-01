@@ -2,8 +2,8 @@ module HTTP
   module Commands
     class Substitute
       attr_accessor :response_body
-      attr_reader :reason_phrase
-      attr_reader :status_code
+      attr_accessor :reason_phrase
+      attr_accessor :status_code
 
       def initialize(status_code, reason_phrase)
         @reason_phrase = reason_phrase
