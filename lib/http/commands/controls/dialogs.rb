@@ -2,6 +2,19 @@ module HTTP
   module Commands
     module Controls
       module Dialogs
+        module Connection
+          def self.example(expected_request=nil, expected_response=nil)
+            if expected_request.nil? && expected_response.nil?
+              expected_request, expected_response = Get.example
+            end
+
+            connection = ::Connection::Client::Substitute.build
+            connection.expect_write expected_request
+            connection.expect_read expected_response
+            connection
+          end
+        end
+
         module Get
           def self.connection_closed
             request = Messages::Requests::Get.example

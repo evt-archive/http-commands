@@ -1,18 +1,17 @@
 require_relative './spec_init'
 
 context 'Post' do
-  host = HTTP::Commands::Controls::Messages::Requests.host
-  resource_target = HTTP::Commands::Controls::Messages::Requests.resource_target
+  uri = HTTP::Commands::Controls::Messages::Requests.uri
 
   test 'Without Response Body' do
     request_body = HTTP::Commands::Controls::Messages::Resources.example
     expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Post.example request_body
+    connection = HTTP::Commands::Controls::Dialogs::Connection.example expected_request, expected_response
 
-    post = HTTP::Commands::Post.new request_body, host, resource_target, {}
-    post.connection.expect_write expected_request
-    post.connection.expect_read expected_response
+    post = HTTP::Commands::Post.new
+    post.connection = connection
 
-    response = post.()
+    response = post.(request_body, uri, {})
 
     assert response.status_code == 201
     assert response.body.nil?
@@ -21,14 +20,13 @@ context 'Post' do
   test 'With Response Body' do
     request_body = 'some-request'
     response_body = 'some-response'
-
     expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Post.example request_body, response_body
+    connection = HTTP::Commands::Controls::Dialogs::Connection.example expected_request, expected_response
 
-    post = HTTP::Commands::Post.new request_body, host, resource_target, {}
-    post.connection.expect_write expected_request
-    post.connection.expect_read expected_response
+    post = HTTP::Commands::Post.new
+    post.connection = connection
 
-    response = post.()
+    response = post.(request_body, uri, {})
 
     assert response.status_code == 201
     assert response.body == response_body
@@ -40,14 +38,22 @@ context 'Post' do
     resource = HTTP::Commands::Controls::Messages::Resources.json
     request_body = JSON.pretty_generate resource
     expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Post::JSON.example resource
+    connection = HTTP::Commands::Controls::Dialogs::Connection.example expected_request, expected_response
 
-    post = HTTP::Commands::Post.new request_body, host, resource_target, headers
-    post.connection.expect_write expected_request
-    post.connection.expect_read expected_response
+    post = HTTP::Commands::Post.new
+    post.connection = connection
 
-    response = post.()
+    response = post.(request_body, uri, headers)
 
     assert response.status_code == 201
     assert response.body.nil?
+  end
+
+  test "Configuring" do
+    receiver = OpenStruct.new
+
+    HTTP::Commands::Post.configure receiver, :some_attr
+
+    assert receiver.some_attr.is_a?(HTTP::Commands::Post)
   end
 end

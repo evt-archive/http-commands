@@ -1,50 +1,47 @@
 module HTTP
   module Commands
     class Get
-      attr_reader :headers
-      attr_reader :host
-      attr_reader :resource_target
+      attr_accessor :connection
 
-      dependency :connection, Connection::Client
-      dependency :logger
+      dependency :logger, Telemetry::Logger
 
-      def initialize(host, resource_target, headers)
-        @headers = headers
-        @host = host
-        @resource_target = resource_target
+      def self.build(connection=nil)
+        new.tap do |instance|
+          Telemetry::Logger.configure instance
+
+          instance.connection = connection if connection
+        end
       end
 
-      def self.build(uri, headers={}, connection: nil)
+      def self.configure(receiver, attr_name=nil, connection: nil)
+        attr_name ||= :get
+
+        instance = build connection
+        receiver.send "#{attr_name}=", instance
+        instance
+      end
+
+      def self.call(uri, headers=nil, connection: nil)
+        instance = build connection
+        instance.(uri, headers)
+      end
+
+      def call(uri, headers=nil)
+        headers ||= {}
+
         uri = URI(uri)
+        connection = self.connection || Connect.(uri)
 
         resource_target = uri.request_uri
         host = uri.host
 
-        new(host, resource_target, headers).tap do |instance|
-          Telemetry::Logger.configure instance
-
-          if connection
-            instance.connection = connection
-          else
-            Connect.configure_connection instance, uri
-          end
-        end
-      end
-
-      def self.call(*arguments)
-        instance = build(*arguments)
-        instance.()
-      end
-
-      def call
-        request = Request.build(
+        Request.(
           connection,
           'GET',
           host,
           resource_target,
           headers: headers
         )
-        request.()
       end
     end
   end
