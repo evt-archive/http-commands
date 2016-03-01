@@ -44,29 +44,21 @@ module HTTP
 
         uri = URI(uri)
 
-        connection = coalesce_connection self.connection, uri do
-          headers['Connection'] ||= 'close'
-        end
+        connection = self.connection
 
-        resource_target = uri.request_uri
-        host = uri.host
+        if connection.nil?
+          headers['Connection'] ||= 'close'
+          connection = Connect.(uri)
+        end
 
         Request.(
           connection,
           action,
-          host,
-          resource_target,
+          uri.host,
+          uri.request_uri,
           body: body,
           headers: headers
         )
-      end
-
-      def coalesce_connection(connection, uri, &block)
-        return connection if connection
-
-        connection = Connect.(uri)
-        block.()
-        connection
       end
     end
   end
