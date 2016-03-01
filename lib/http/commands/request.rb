@@ -8,8 +8,9 @@ module HTTP
       attr_reader :target
 
       dependency :logger, Telemetry::Logger
+      dependency :persistent_connection, PersistentConnection
 
-      def initialize(connection, action, host, target, body, headers)
+      def initialize(connection, action, host, target, body=nil, headers=nil)
         @action = action
         @body = body
         @headers = headers
@@ -21,6 +22,7 @@ module HTTP
       def self.build(connection, action, host, target, body: nil, headers: nil)
         instance = new connection, action, host, target, body, headers
         Telemetry::Logger.configure instance
+        PersistentConnection.configure instance
         instance
       end
 
@@ -30,6 +32,7 @@ module HTTP
       end
 
       def call
+        set_connection_header
         send_request
         response, body = receive_response
         connection.close if response['Connection'] == 'close'
@@ -76,6 +79,12 @@ module HTTP
         logger.opt_data response
 
         return response, body
+      end
+
+      def set_connection_header
+        unless persistent_connection.(connection)
+          headers['Connection'] ||= 'close'
+        end
       end
 
       def request_message_length

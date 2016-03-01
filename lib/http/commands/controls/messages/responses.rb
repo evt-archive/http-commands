@@ -4,24 +4,35 @@ module HTTP
       module Messages
         module Responses
           module Get
-            def self.connection_closed
-              <<-HTTP
-HTTP/1.1 200 Ok\r
-Content-Length: 0\r
-Connection: close\r
-\r
-              HTTP
+            def self.example(body=nil)
+              ServerClosesConnection.example body
             end
 
-            def self.example(body=nil)
-              body ||= Resources.text
+            module ServerAllowsConnectionReuse
+              def self.example(body=nil)
+                body ||= Resources.text
 
-              <<-HTTP.chomp
+                <<-HTTP.chomp
 HTTP/1.1 200 Ok\r
 Content-Length: #{Commands.content_length(body)}\r
 \r
 #{body}
-              HTTP
+                HTTP
+              end
+            end
+
+            module ServerClosesConnection
+              def self.example(body=nil)
+                body ||= Resources.text
+
+                <<-HTTP.chomp
+HTTP/1.1 200 Ok\r
+Content-Length: #{Commands.content_length(body)}\r
+Connection: close\r
+\r
+#{body}
+                HTTP
+              end
             end
 
             module JSON
@@ -45,6 +56,7 @@ Content-Length: #{Commands.content_length(body)}\r
                 <<-HTTP.chomp
 HTTP/1.1 201 Created\r
 Content-Length: #{Commands.content_length(response_body)}\r
+Connection: close\r
 \r
 #{response_body}
                 HTTP

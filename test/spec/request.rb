@@ -1,29 +1,47 @@
 require_relative './spec_init'
 
-context 'Request' do
-  uri = HTTP::Commands::Controls::Messages::Requests.uri
+context "Request" do
+  host = HTTP::Commands::Controls::Host.example
+  resource_target = HTTP::Commands::Controls::ResourceTarget.example
+  action = HTTP::Commands::Controls::Action.example
 
-  test 'Leaving the Connection Open' do
-    expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Get.example
-    connection = HTTP::Commands::Controls::Dialogs::Connection.example expected_request, expected_response
+  context "Client connection supports persistent connections" do
+    test "Leaving the connection open" do
+      expected_request, expected_response = HTTP::Commands::Controls::Dialogs::PersistentConnection.example
+      connection = HTTP::Commands::Controls::Dialogs::Connection.example expected_request, expected_response
 
-    get = HTTP::Commands::Get.new
-    get.connection = connection
+      request = HTTP::Commands::Request.new connection, action, host, resource_target
+      request.persistent_connection.persistent = true
 
-    get.(uri)
+      request.()
 
-    assert !get.connection.closed?
+      assert !request.connection.closed?
+    end
+
+    test "Closing the connection when the server closes it" do
+      expected_request, expected_response = HTTP::Commands::Controls::Dialogs::ServerClosesConnection.example
+      connection = HTTP::Commands::Controls::Dialogs::Connection.example expected_request, expected_response
+
+      request = HTTP::Commands::Request.new connection, action, host, resource_target
+      request.persistent_connection.persistent = true
+
+      request.()
+
+      assert request.connection.closed?
+    end
   end
 
-  test "Closing the Connection at Server's Request" do
-    expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Get.connection_closed
-    connection = HTTP::Commands::Controls::Dialogs::Connection.example expected_request, expected_response
+  context "Client connection does not support persistent connections" do
+    test "Connection is not allowed to be reused" do
+      expected_request, expected_response = HTTP::Commands::Controls::Dialogs::ClientClosesConnection.example
+      connection = HTTP::Commands::Controls::Dialogs::Connection.example expected_request, expected_response
 
-    get = HTTP::Commands::Get.new
-    get.connection = connection
+      request = HTTP::Commands::Request.new connection, action, host, resource_target
+      request.persistent_connection.persistent = false
 
-    get.(uri)
+      request.()
 
-    assert get.connection.closed?
+      assert request.connection.closed?
+    end
   end
 end
