@@ -5,7 +5,7 @@ module HTTP
         module Responses
           module Get
             def self.example(body=nil)
-              ServerClosesConnection.example body
+              ServerAllowsConnectionReuse.example body
             end
 
             module ServerAllowsConnectionReuse
@@ -56,7 +56,6 @@ Content-Length: #{Commands.content_length(body)}\r
                 <<-HTTP.chomp
 HTTP/1.1 201 Created\r
 Content-Length: #{Commands.content_length(response_body)}\r
-Connection: close\r
 \r
 #{response_body}
                 HTTP

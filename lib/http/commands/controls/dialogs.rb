@@ -3,21 +3,21 @@ module HTTP
     module Controls
       module Dialogs
         def self.example
-          ClientClosesConnection.example
+          PersistentConnection.example
         end
 
         module ClientClosesConnection
           def self.example
-            Get.example
+            request = Messages::Requests::Get::ClientClosesConnection.example
+            response = Messages::Responses::Get::ServerClosesConnection.example
+
+            return request, response
           end
         end
 
         module PersistentConnection
           def self.example
-            request = Messages::Requests::Get::ClientAllowsConnectionReuse.example
-            response = Messages::Responses::Get::ServerAllowsConnectionReuse.example
-
-            return request, response
+            Get.example
           end
         end
 

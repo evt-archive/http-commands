@@ -30,7 +30,12 @@ module HTTP
         headers ||= {}
 
         uri = URI(uri)
-        connection = self.connection || Connect.(uri)
+        connection = self.connection
+
+        if connection.nil?
+          headers['Connection'] ||= 'close'
+          connection = Connect.(uri)
+        end
 
         resource_target = uri.request_uri
         host = uri.host

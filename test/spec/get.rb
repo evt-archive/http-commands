@@ -49,4 +49,12 @@ context "Get" do
     assert response.reason_phrase == 'OK'
     assert response.body == 'some-response'
   end
+
+  test "Close connection when not passed in" do
+    get = HTTP::Commands::Get.build
+
+    response = get.('http://www.example.com')
+
+    assert response['Connection'] == 'close'
+  end
 end

@@ -40,10 +40,12 @@ module HTTP
         )
       end
 
-      def self.configure_connection(receiver, uri)
-        connection = self.(uri)
-        receiver.connection = connection
-        connection
+      def self.configure(receiver, attr_name=nil)
+        attr_name ||= :connect
+
+        instance = build
+        receiver.public_send "#{attr_name}=", instance
+        instance
       end
 
       def self.ssl_context(verify_certs)

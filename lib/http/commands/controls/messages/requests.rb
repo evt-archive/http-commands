@@ -20,7 +20,7 @@ module HTTP
 
           module Get
             def self.example
-              ClientClosesConnection.example
+              ClientAllowsConnectionReuse.example
             end
 
             module ClientAllowsConnectionReuse
@@ -50,7 +50,6 @@ Connection: close\r
 GET /resource-target HTTP/1.1\r
 Host: #{Host.example}\r
 Accept: application/json\r
-Connection: close\r
 \r
                 HTTP
               end
@@ -65,7 +64,6 @@ Connection: close\r
 POST /resource-target HTTP/1.1\r
 Host: #{Host.example}\r
 Content-Length: #{Commands.content_length(body)}\r
-Connection: close\r
 \r
 #{body}
               HTTP
@@ -81,7 +79,6 @@ POST /resource-target HTTP/1.1\r
 Host: #{Host.example}\r
 Content-Length: #{Commands.content_length(request_body)}\r
 Content-Type: application/json\r
-Connection: close\r
 \r
 #{request_body}
                 HTTP
