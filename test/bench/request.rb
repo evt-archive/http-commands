@@ -1,4 +1,4 @@
-require_relative './spec_init'
+require_relative './bench_init'
 
 context "Request" do
   host = HTTP::Commands::Controls::Host.example
