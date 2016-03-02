@@ -1,4 +1,4 @@
-require_relative './spec_init'
+require_relative './bench_init'
 
 context "Content Length" do
   test "Is the count of bytes in a string representation of the content" do

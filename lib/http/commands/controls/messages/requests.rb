@@ -4,11 +4,11 @@ module HTTP
       module Messages
         module Requests
           def self.host
-            'www.example.com'
+            Host.example
           end
 
           def self.resource_target
-            '/resource-target'
+            ResourceTarget.example
           end
 
           def self.uri(scheme=nil)
@@ -20,18 +20,35 @@ module HTTP
 
           module Get
             def self.example
-              <<-HTTP
+              ClientAllowsConnectionReuse.example
+            end
+
+            module ClientAllowsConnectionReuse
+              def self.example
+                <<-HTTP
 GET /resource-target HTTP/1.1\r
-Host: www.example.com\r
+Host: #{Host.example}\r
 \r
-              HTTP
+                HTTP
+              end
+            end
+
+            module ClientClosesConnection
+              def self.example
+                <<-HTTP
+GET /resource-target HTTP/1.1\r
+Host: #{Host.example}\r
+Connection: close\r
+\r
+                HTTP
+              end
             end
 
             module JSON
               def self.example
                 <<-HTTP
 GET /resource-target HTTP/1.1\r
-Host: www.example.com\r
+Host: #{Host.example}\r
 Accept: application/json\r
 \r
                 HTTP
@@ -45,7 +62,7 @@ Accept: application/json\r
 
               <<-HTTP.chomp
 POST /resource-target HTTP/1.1\r
-Host: www.example.com\r
+Host: #{Host.example}\r
 Content-Length: #{Commands.content_length(body)}\r
 \r
 #{body}
@@ -59,7 +76,7 @@ Content-Length: #{Commands.content_length(body)}\r
 
                 <<-HTTP.chomp
 POST /resource-target HTTP/1.1\r
-Host: www.example.com\r
+Host: #{Host.example}\r
 Content-Length: #{Commands.content_length(request_body)}\r
 Content-Type: application/json\r
 \r

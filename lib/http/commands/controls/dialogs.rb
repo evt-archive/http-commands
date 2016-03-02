@@ -2,6 +2,34 @@ module HTTP
   module Commands
     module Controls
       module Dialogs
+        def self.example
+          PersistentConnection.example
+        end
+
+        module ClientClosesConnection
+          def self.example
+            request = Messages::Requests::Get::ClientClosesConnection.example
+            response = Messages::Responses::Get::ServerClosesConnection.example
+
+            return request, response
+          end
+        end
+
+        module PersistentConnection
+          def self.example
+            Get.example
+          end
+        end
+
+        module ServerClosesConnection
+          def self.example
+            request = Messages::Requests::Get::ClientAllowsConnectionReuse.example
+            response = Messages::Responses::Get::ServerClosesConnection.example
+
+            return request, response
+          end
+        end
+
         module Connection
           def self.example(expected_request=nil, expected_response=nil)
             if expected_request.nil? && expected_response.nil?
@@ -16,13 +44,6 @@ module HTTP
         end
 
         module Get
-          def self.connection_closed
-            request = Messages::Requests::Get.example
-            response = Messages::Responses::Get.connection_closed
-
-            return request, response
-          end
-
           def self.example(response_resource=nil)
             request = Messages::Requests::Get.example
             response = Messages::Responses::Get.example response_resource

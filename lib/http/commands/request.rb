@@ -9,7 +9,7 @@ module HTTP
 
       dependency :logger, Telemetry::Logger
 
-      def initialize(connection, action, host, target, body, headers)
+      def initialize(connection, action, host, target, body=nil, headers=nil)
         @action = action
         @body = body
         @headers = headers

@@ -1,6 +1,6 @@
-require_relative './spec_init'
+require_relative './bench_init'
 
-context 'Get' do
+context "Get" do
   uri = HTTP::Commands::Controls::Messages::Requests.uri
 
   test do
@@ -17,7 +17,7 @@ context 'Get' do
     assert response.body == resource
   end
 
-  test 'Supplying Headers' do
+  test "Supplying Headers" do
     resource = HTTP::Commands::Controls::Messages::Resources.json
     expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Get::JSON.example resource
     connection = HTTP::Commands::Controls::Dialogs::Connection.example expected_request, expected_response
@@ -48,5 +48,13 @@ context 'Get' do
     assert response.status_code == 200
     assert response.reason_phrase == 'OK'
     assert response.body == 'some-response'
+  end
+
+  test "Close connection when not passed in" do
+    get = HTTP::Commands::Get.build
+
+    response = get.('http://www.example.com')
+
+    assert response['Connection'] == 'close'
   end
 end
