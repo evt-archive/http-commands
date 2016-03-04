@@ -14,9 +14,9 @@ module HTTP
       end
 
       module Actuate
-        def call(uri, headers=nil, connection: nil)
+        def call(*arguments, connection: nil)
           instance = build connection
-          instance.(uri, headers)
+          instance.(*arguments)
         end
       end
 

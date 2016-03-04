@@ -8,10 +8,7 @@ context 'Post' do
     expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Post.example request_body
     connection = HTTP::Commands::Controls::Dialogs::Connection.example expected_request, expected_response
 
-    post = HTTP::Commands::Post.new
-    post.connection = connection
-
-    response = post.(request_body, uri, {})
+    response = HTTP::Commands::Post.(request_body, uri, :connection => connection)
 
     assert response.status_code == 201
     assert response.body.nil?
@@ -23,10 +20,7 @@ context 'Post' do
     expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Post.example request_body, response_body
     connection = HTTP::Commands::Controls::Dialogs::Connection.example expected_request, expected_response
 
-    post = HTTP::Commands::Post.new
-    post.connection = connection
-
-    response = post.(request_body, uri, {})
+    response = HTTP::Commands::Post.(request_body, uri, :connection => connection)
 
     assert response.status_code == 201
     assert response.body == response_body
@@ -40,10 +34,7 @@ context 'Post' do
     expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Post::JSON.example resource
     connection = HTTP::Commands::Controls::Dialogs::Connection.example expected_request, expected_response
 
-    post = HTTP::Commands::Post.new
-    post.connection = connection
-
-    response = post.(request_body, uri, headers)
+    response = HTTP::Commands::Post.(request_body, uri, headers, :connection => connection)
 
     assert response.status_code == 201
     assert response.body.nil?

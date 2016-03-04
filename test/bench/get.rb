@@ -8,10 +8,7 @@ context "Get" do
     expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Get.example resource
     connection = HTTP::Commands::Controls::Dialogs::Connection.example expected_request, expected_response
 
-    get = HTTP::Commands::Get.new
-    get.connection = connection
-
-    response = get.(uri)
+    response = HTTP::Commands::Get.(uri, :connection => connection)
 
     assert response.status_code == 200
     assert response.body == resource
@@ -22,10 +19,7 @@ context "Get" do
     expected_request, expected_response = HTTP::Commands::Controls::Dialogs::Get::JSON.example resource
     connection = HTTP::Commands::Controls::Dialogs::Connection.example expected_request, expected_response
 
-    get = HTTP::Commands::Get.new
-    get.connection = connection
-
-    response = get.(uri, 'Accept' => 'application/json')
+    response = HTTP::Commands::Get.(uri, 'Accept' => 'application/json', :connection => connection)
 
     assert response.status_code == 200
     assert JSON.parse(response.body) == resource
