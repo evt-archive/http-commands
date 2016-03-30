@@ -1,6 +1,6 @@
 module HTTP
   module Commands
-    module Action
+    module Command
       def self.included(cls)
         cls.extend Actuate
         cls.extend Build
@@ -8,7 +8,6 @@ module HTTP
         cls.extend Logger
 
         cls.class_exec do
-          # TODO Is this otherwise a dependency? [Scott, Wed Mar 30 2016]
           attr_accessor :connection
 
           dependency :logger, Telemetry::Logger
@@ -51,7 +50,7 @@ module HTTP
         end
       end
 
-      def action(action, uri, body: nil, headers: nil)
+      def execute(action, uri, body: nil, headers: nil)
         Request.(
           action,
           uri,
