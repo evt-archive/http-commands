@@ -1,7 +1,7 @@
 require_relative './bench_init'
 
 context 'Post' do
-  uri = HTTP::Commands::Controls::Messages::Requests.uri
+  uri = HTTP::Commands::Controls::URI.example
 
   test 'Without Response Body' do
     request_body = HTTP::Commands::Controls::Messages::Resources.example

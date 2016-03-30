@@ -1,7 +1,7 @@
 require_relative '../bench_init'
 
 context "Get" do
-  uri = HTTP::Commands::Controls::Messages::Requests.uri
+  uri = HTTP::Commands::Controls::URI.example
 
   context do
     get = HTTP::Commands::Get.build
@@ -55,7 +55,7 @@ context "Get" do
 
     context "Execute the command" do
       connection = nil
-      response = get.('http://www.example.com') do |conn|
+      response = get.(uri) do |conn|
         connection = conn
       end
 

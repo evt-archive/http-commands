@@ -3,10 +3,6 @@ module HTTP
     module Controls
       module Messages
         module Requests
-          def self.uri
-            URI.example
-          end
-
           module Get
             def self.example
               ClientAllowsConnectionReuse.example
