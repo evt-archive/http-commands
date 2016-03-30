@@ -3,7 +3,7 @@ module HTTP
     module Controls
       module Port
         def self.example
-          ::Connection::Controls::Port.example
+          80
         end
       end
     end

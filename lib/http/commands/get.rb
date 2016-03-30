@@ -3,8 +3,8 @@ module HTTP
     class Get
       include Action
 
-      def call(uri, headers=nil, &blk)
-        action 'GET', uri, headers: headers, &blk
+      def call(uri, headers=nil)
+        action 'GET', uri, headers: headers
       end
 
       module Substitute

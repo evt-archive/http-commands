@@ -5,7 +5,6 @@ module HTTP
         cls.extend Actuate
         cls.extend Build
         cls.extend Configure
-        cls.extend Connection
         cls.extend Logger
 
         cls.class_exec do
@@ -17,9 +16,9 @@ module HTTP
       end
 
       module Actuate
-        def call(*arguments, connection: nil, &blk)
+        def call(*arguments, connection: nil)
           instance = build connection
-          instance.(*arguments, &blk)
+          instance.(*arguments)
         end
       end
 
@@ -37,37 +36,12 @@ module HTTP
           attr_name ||= receiver_attr_name
 
           instance = build connection
-          receiver.send "#{attr_name}=", instance
+          receiver.public_send "#{attr_name}=", instance
           instance
         end
 
         def receiver_attr_name
           self.name.downcase.split('::').last
-        end
-      end
-
-      module Connection
-        def get_connection(connection, uri, headers, &blk)
-          if connection.nil?
-            connection = get_one_time_connection(uri, headers, &blk)
-          end
-
-          connection
-        end
-
-        def get_one_time_connection(uri, headers, &blk)
-          logger.trace "Creating one-time connection"
-
-          headers['Connection'] ||= 'close'
-          connection = Connect.(uri)
-
-          if blk
-            blk.(connection)
-          end
-
-          logger.debug "Created one-time connection"
-
-          connection
         end
       end
 
@@ -77,22 +51,13 @@ module HTTP
         end
       end
 
-      def action(action, uri, body: nil, headers: nil, &blk)
-        # TODO headers is a candidate for instance member (it's passed around) [Scott, Wed Mar 30 2016]
-        headers ||= {}
-
-        # TODO uri is a candidate for instance member (it's passed around) [Scott, Wed Mar 30 2016]
-        uri = URI(uri)
-
-        connection = self.class.get_connection(self.connection, uri, headers, &blk)
-
+      def action(action, uri, body: nil, headers: nil)
         Request.(
-          connection,
           action,
-          uri.host,
-          uri.request_uri,
+          uri,
           body: body,
-          headers: headers
+          headers: headers,
+          connection: connection
         )
       end
     end

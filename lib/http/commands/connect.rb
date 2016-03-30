@@ -3,17 +3,17 @@ module HTTP
     class Connect
       attr_reader :host
       attr_reader :port
-      attr_reader :scheduler
       attr_reader :ssl_context
 
-      def initialize(host, port, ssl_context, scheduler=nil)
+      dependency :logger, Telemetry::Logger
+
+      def initialize(host, port, ssl_context=nil)
         @host = host
         @port = port
         @ssl_context = ssl_context
-        @scheduler = scheduler
       end
 
-      def self.build(uri, scheduler: nil, verify_certs: nil)
+      def self.build(uri, verify_certs: nil)
         verify_certs = true if verify_certs.nil?
 
         host = uri.host
@@ -23,21 +23,11 @@ module HTTP
           ssl_context = self.ssl_context verify_certs
         end
 
-        new(host, port, ssl_context, scheduler)
-      end
+        instance = new(host, port, ssl_context)
 
-      def self.call(*arguments)
-        instance = build *arguments
-        instance.()
-      end
+        Telemetry::Logger.configure instance
 
-      def call
-        Connection::Client.build(
-          host,
-          port,
-          scheduler: scheduler,
-          ssl: ssl_context
-        )
+        instance
       end
 
       def self.configure(receiver, attr_name=nil)
@@ -46,6 +36,25 @@ module HTTP
         instance = build
         receiver.public_send "#{attr_name}=", instance
         instance
+      end
+
+      def self.call(*arguments)
+        instance = build *arguments
+        instance.()
+      end
+
+      def call
+        logger.opt_trace "Establishing connection (Host: #{host}, Port: #{port}, SSL: #{!!ssl_context})"
+
+        connection = Connection::Client.build(
+          host,
+          port,
+          ssl: ssl_context
+        )
+
+        logger.opt_debug "Established connection (Host: #{host}, Port: #{port}, SSL: #{!!ssl_context})"
+
+        connection
       end
 
       def self.ssl_context(verify_certs)
