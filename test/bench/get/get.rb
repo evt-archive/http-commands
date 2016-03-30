@@ -38,7 +38,7 @@ context "Get" do
 
     test "One-time connection is not created" do
       one_time_connection = nil
-      get.('http://www.example.com') do |conn|
+      get.(uri) do |conn|
         one_time_connection = conn
       end
 
