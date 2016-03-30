@@ -1,10 +1,11 @@
 module HTTP
   module Commands
-    module Action
+    module Command
       def self.included(cls)
         cls.extend Actuate
         cls.extend Build
         cls.extend Configure
+        cls.extend Logger
 
         cls.class_exec do
           attr_accessor :connection
@@ -31,34 +32,22 @@ module HTTP
 
       module Configure
         def configure(receiver, attr_name=nil, connection: nil)
-          attr_name ||= :get
+          attr_name ||= receiver_attr_name
 
           instance = build connection
-          receiver.send "#{attr_name}=", instance
+          receiver.public_send "#{attr_name}=", instance
           instance
+        end
+
+        def receiver_attr_name
+          self.name.downcase.split('::').last
         end
       end
 
-      def action(action, uri, body: nil, headers: nil)
-        headers ||= {}
-
-        uri = URI(uri)
-
-        connection = self.connection
-
-        if connection.nil?
-          headers['Connection'] ||= 'close'
-          connection = Connect.(uri)
+      module Logger
+        def logger
+          Telemetry::Logger.get self
         end
-
-        Request.(
-          connection,
-          action,
-          uri.host,
-          uri.request_uri,
-          body: body,
-          headers: headers
-        )
       end
     end
   end

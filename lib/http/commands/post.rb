@@ -1,10 +1,16 @@
 module HTTP
   module Commands
     class Post
-      include Action
+      include Command
 
       def call(body, uri, headers=nil)
-        action 'POST', uri, body: body, headers: headers
+        Request.(
+          'POST',
+          uri,
+          body: body,
+          headers: headers,
+          connection: connection
+        )
       end
 
       module Substitute

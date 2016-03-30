@@ -1,10 +1,15 @@
 module HTTP
   module Commands
     class Get
-      include Action
+      include Command
 
       def call(uri, headers=nil)
-        action 'GET', uri, headers: headers
+        Request.(
+          'GET',
+          uri,
+          headers: headers,
+          connection: connection
+        )
       end
 
       module Substitute

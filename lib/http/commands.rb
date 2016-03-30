@@ -3,7 +3,7 @@ require 'uri'
 require 'http/protocol'
 require 'connection/client'
 
-require 'http/commands/action'
+require 'http/commands/command'
 require 'http/commands/connect'
 require 'http/commands/content_length'
 require 'http/commands/get'

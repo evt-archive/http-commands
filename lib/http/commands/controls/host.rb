@@ -1,11 +1,7 @@
 module HTTP
   module Commands
     module Controls
-      module Host
-        def self.example
-          ::Connection::Controls::Host.example
-        end
-      end
+      Host = ::Connection::Controls::Host
     end
   end
 end
