@@ -5,7 +5,7 @@ module HTTP
 
       def call(body, uri, headers=nil)
         Request.(
-          'POST',
+          self.class.action,
           uri,
           body: body,
           headers: headers,
