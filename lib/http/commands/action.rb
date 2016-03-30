@@ -51,7 +51,7 @@ module HTTP
           connection = Connect.(uri)
         end
 
-        Request.(
+        response = Request.(
           connection,
           action,
           uri.host,
@@ -59,6 +59,8 @@ module HTTP
           body: body,
           headers: headers
         )
+
+        return response, connection
       end
     end
   end
