@@ -2,11 +2,16 @@ module HTTP
   module Commands
     module Controls
       module URI
-        def self.example(resource_target=nil, port: nil)
-          resource_target ||= 'some-resource'
-          port ||= 8000
+        def self.example
+          ::URI::HTTP.build :host => host, :path => resource_target
+        end
 
-          File.join "http://localhost:#{port}", resource_target
+        def self.host
+          Host.example
+        end
+
+        def self.resource_target
+          ResourceTarget.example
         end
       end
     end

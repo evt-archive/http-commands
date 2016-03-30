@@ -32,7 +32,7 @@ context "Get" do
   end
 
   context "Connection assigned at construction" do
-    connection = HTTP::Commands::Controls::Dialogs::Connection.example
+    connection = HTTP::Commands::Controls::Connection.example
 
     get = HTTP::Commands::Get.build(connection)
 

@@ -3,7 +3,7 @@ module HTTP
     module Controls
       module ResourceTarget
         def self.example
-          '/resource-target'
+          '/index.html'
         end
       end
     end

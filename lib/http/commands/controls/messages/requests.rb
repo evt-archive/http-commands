@@ -3,19 +3,8 @@ module HTTP
     module Controls
       module Messages
         module Requests
-          def self.host
-            Host.example
-          end
-
-          def self.resource_target
-            ResourceTarget.example
-          end
-
-          def self.uri(scheme=nil)
-            scheme ||= 'HTTP'
-
-            cls = ::URI.const_get scheme
-            cls.build :host => host, :path => resource_target
+          def self.uri
+            URI.example
           end
 
           module Get
@@ -26,7 +15,7 @@ module HTTP
             module ClientAllowsConnectionReuse
               def self.example
                 <<-HTTP
-GET /resource-target HTTP/1.1\r
+GET #{ResourceTarget.example} HTTP/1.1\r
 Host: #{Host.example}\r
 \r
                 HTTP
@@ -36,7 +25,7 @@ Host: #{Host.example}\r
             module ClientClosesConnection
               def self.example
                 <<-HTTP
-GET /resource-target HTTP/1.1\r
+GET #{ResourceTarget.example} HTTP/1.1\r
 Host: #{Host.example}\r
 Connection: close\r
 \r
@@ -47,7 +36,7 @@ Connection: close\r
             module JSON
               def self.example
                 <<-HTTP
-GET /resource-target HTTP/1.1\r
+GET #{ResourceTarget.example} HTTP/1.1\r
 Host: #{Host.example}\r
 Accept: application/json\r
 \r
@@ -61,7 +50,7 @@ Accept: application/json\r
               body ||= Resources.text
 
               <<-HTTP.chomp
-POST /resource-target HTTP/1.1\r
+POST #{ResourceTarget.example} HTTP/1.1\r
 Host: #{Host.example}\r
 Content-Length: #{Commands.content_length(body)}\r
 \r
@@ -75,7 +64,7 @@ Content-Length: #{Commands.content_length(body)}\r
                 request_body = ::JSON.pretty_generate resource
 
                 <<-HTTP.chomp
-POST /resource-target HTTP/1.1\r
+POST #{ResourceTarget.example} HTTP/1.1\r
 Host: #{Host.example}\r
 Content-Length: #{Commands.content_length(request_body)}\r
 Content-Type: application/json\r

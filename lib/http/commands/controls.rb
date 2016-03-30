@@ -2,6 +2,7 @@ require 'controls'
 
 require 'connection/controls'
 
+require 'http/commands/controls/connection'
 require 'http/commands/controls/action'
 require 'http/commands/controls/dialogs'
 require 'http/commands/controls/host'
