@@ -7,6 +7,7 @@ module HTTP
         cls.extend Configure
 
         cls.class_exec do
+          # TODO Is this otherwise a dependency? [Scott, Wed Mar 30 2016]
           attr_accessor :connection
 
           dependency :logger, Telemetry::Logger
@@ -14,14 +15,17 @@ module HTTP
       end
 
       module Actuate
-        def call(*arguments, connection: nil)
+        def call(*arguments, connection: nil, &blk)
           instance = build connection
-          instance.(*arguments)
+          instance.(*arguments, &blk)
         end
       end
 
       module Build
-        def build(connection=nil)
+        # TODO Why is this an optional positional param when the other methods at this level are named param? [Scott, Wed Mar 30 2016]
+        # Postulation: because it's the only param
+        # This pattern is in other libraries as well
+        def build(connection=nil, &blk)
           new.tap do |instance|
             Telemetry::Logger.configure instance
             instance.connection = connection if connection
@@ -46,7 +50,7 @@ module HTTP
         # TODO uri is a candidate for instance member (it's passed around) [Scott, Wed Mar 30 2016]
         uri = URI(uri)
 
-        connection = get_connection(uri, headers, &blk)
+        connection = get_connection(self.connection, uri, headers, &blk)
 
         Request.(
           connection,
@@ -58,19 +62,25 @@ module HTTP
         )
       end
 
-      def get_connection(uri, headers, &blk)
-        connection = self.connection
-
+      def get_connection(connection, uri, headers, &blk)
         if connection.nil?
-          logger.debug "Creating one-time connection"
-
-          headers['Connection'] ||= 'close'
-          connection = Connect.(uri)
-
-          if blk
-            blk.(connection)
-          end
+          connection = get_one_time_connection(uri, headers, &blk)
         end
+
+        connection
+      end
+
+      def get_one_time_connection(uri, headers, &blk)
+        logger.trace "Creating one-time connection"
+
+        headers['Connection'] ||= 'close'
+        connection = Connect.(uri)
+
+        if blk
+          blk.(connection)
+        end
+
+        logger.debug "Created one-time connection"
 
         connection
       end

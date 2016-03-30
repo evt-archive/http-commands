@@ -1,3 +1,6 @@
+# TODO Why are connections in a Dialogs namespace [Scott, Wed Mar 30 2016]
+# Postulation: Connection may be in a Dialog namespace in the connection library
+
 module HTTP
   module Commands
     module Controls

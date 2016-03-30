@@ -32,7 +32,18 @@ context "Get" do
   end
 
   context "Connection assigned at construction" do
-    test "One-time connection is not created"
+    connection = HTTP::Commands::Controls::Dialogs::Connection.example
+
+    get = HTTP::Commands::Get.build(connection)
+
+    test "One-time connection is not created" do
+      one_time_connection = nil
+      get.('http://www.example.com') do |conn|
+        one_time_connection = conn
+      end
+
+      assert one_time_connection.nil?
+    end
   end
 
   context "One-time connection" do
