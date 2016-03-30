@@ -49,16 +49,6 @@ module HTTP
           Telemetry::Logger.get self
         end
       end
-
-      def execute(action, uri, body: nil, headers: nil)
-        Request.(
-          action,
-          uri,
-          body: body,
-          headers: headers,
-          connection: connection
-        )
-      end
     end
   end
 end

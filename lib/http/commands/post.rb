@@ -4,7 +4,13 @@ module HTTP
       include Command
 
       def call(body, uri, headers=nil)
-        execute 'POST', uri, body: body, headers: headers
+        Request.(
+          'POST',
+          uri,
+          body: body,
+          headers: headers,
+          connection: connection
+        )
       end
 
       module Substitute
