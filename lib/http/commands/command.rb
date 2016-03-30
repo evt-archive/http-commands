@@ -5,7 +5,6 @@ module HTTP
         cls.extend Actuate
         cls.extend Build
         cls.extend Configure
-        cls.extend Logger
 
         cls.class_exec do
           attr_accessor :connection
@@ -40,13 +39,15 @@ module HTTP
         end
 
         def receiver_attr_name
-          self.name.downcase.split('::').last
+          class_name.downcase
         end
-      end
 
-      module Logger
-        def logger
-          Telemetry::Logger.get self
+        def action
+          class_name.upcase
+        end
+
+        def class_name
+          self.name.split('::').last
         end
       end
     end
