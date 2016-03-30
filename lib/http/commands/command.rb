@@ -4,6 +4,7 @@ module HTTP
       def self.included(cls)
         cls.extend Actuate
         cls.extend Build
+        cls.extend Info
         cls.extend Configure
 
         cls.class_exec do
@@ -37,7 +38,9 @@ module HTTP
           receiver.public_send "#{attr_name}=", instance
           instance
         end
+      end
 
+      module Info
         def receiver_attr_name
           class_name.downcase
         end
