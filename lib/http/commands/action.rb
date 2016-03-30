@@ -24,7 +24,7 @@ module HTTP
       end
 
       module Build
-        def build(connection=nil, &blk)
+        def build(connection=nil)
           new.tap do |instance|
             Telemetry::Logger.configure instance
             instance.connection = connection if connection
