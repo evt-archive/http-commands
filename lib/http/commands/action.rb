@@ -39,19 +39,16 @@ module HTTP
         end
       end
 
-      def action(action, uri, body: nil, headers: nil)
+      def action(action, uri, body: nil, headers: nil, &blk)
+        # TODO headers is a candidate for instance member (it's passed around) [Scott, Wed Mar 30 2016]
         headers ||= {}
 
+        # TODO uri is a candidate for instance member (it's passed around) [Scott, Wed Mar 30 2016]
         uri = URI(uri)
 
-        connection = self.connection
+        connection = get_connection(uri, headers, &blk)
 
-        if connection.nil?
-          headers['Connection'] ||= 'close'
-          connection = Connect.(uri)
-        end
-
-        response = Request.(
+        Request.(
           connection,
           action,
           uri.host,
@@ -59,8 +56,23 @@ module HTTP
           body: body,
           headers: headers
         )
+      end
 
-        return response, connection
+      def get_connection(uri, headers, &blk)
+        connection = self.connection
+
+        if connection.nil?
+          logger.debug "Creating one-time connection"
+
+          headers['Connection'] ||= 'close'
+          connection = Connect.(uri)
+
+          if blk
+            blk.(connection)
+          end
+        end
+
+        connection
       end
     end
   end

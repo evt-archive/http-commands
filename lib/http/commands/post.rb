@@ -4,9 +4,7 @@ module HTTP
       include Action
 
       def call(body, uri, headers=nil)
-        response, connection = action 'POST', uri, body: body, headers: headers
-
-        response
+        action 'POST', uri, body: body, headers: headers
       end
 
       module Substitute

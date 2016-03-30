@@ -4,13 +4,7 @@ module HTTP
       include Action
 
       def call(uri, headers=nil, &blk)
-        response, connection = action 'GET', uri, headers: headers
-
-        if blk
-          blk.(connection)
-        end
-
-        response
+        action 'GET', uri, headers: headers, &blk
       end
 
       module Substitute
