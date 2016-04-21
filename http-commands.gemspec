@@ -4,8 +4,8 @@ Gem::Specification.new do |s|
   s.summary = 'Convenience abstractions for common HTTP operations, such as post and get'
   s.description = ' '
 
-  s.authors = ['Obsidian Software, Inc']
-  s.email = 'opensource@obsidianexchange.com'
+  s.authors = ['The Eventide Project']
+  s.email = 'opensource@eventide-project.org'
   s.homepage = 'https://github.com/obsidian-btc/http-commands'
   s.licenses = ['MIT']
 
