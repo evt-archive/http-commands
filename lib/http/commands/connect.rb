@@ -46,7 +46,7 @@ module HTTP
       def call
         logger.opt_trace "Establishing connection (Host: #{host}, Port: #{port}, SSL: #{!!ssl_context})"
 
-        connection = Connection::Client.build(
+        connection = ::Connection::Client.build(
           host,
           port,
           ssl: ssl_context

@@ -9,12 +9,14 @@ module HTTP
             end
 
             module ServerAllowsConnectionReuse
-              def self.example(body=nil)
+              def self.example(body=nil, keep_alive_timeout: nil)
                 body ||= Resources.text
+                keep_alive_timeout ||= Timeout.example
 
                 <<-HTTP.chomp
 HTTP/1.1 200 Ok\r
 Content-Length: #{Commands.content_length(body)}\r
+Keep-Alive: timeout=#{keep_alive_timeout},max=1\r
 \r
 #{body}
                 HTTP

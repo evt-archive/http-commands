@@ -31,7 +31,7 @@ context "Get Substitute" do
       context "Status Code" do
         control_status_code = 200
 
-        test control_status_code do
+        test control_status_code.to_s do
           assert response.status_code == control_status_code
         end
       end

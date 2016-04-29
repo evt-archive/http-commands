@@ -18,6 +18,7 @@ module HTTP
         uri.host
       end
 
+      dependency :clock, Clock::UTC
       dependency :logger, Telemetry::Logger
 
       def initialize(connection, action, uri, body=nil, headers=nil)
@@ -40,6 +41,7 @@ module HTTP
 
         instance = new connection, action, uri, body, headers
 
+        Clock::UTC.configure instance
         Telemetry::Logger.configure instance
 
         instance
@@ -51,9 +53,18 @@ module HTTP
       end
 
       def call
+        connection.extend Connection unless connection.is_a? Connection
+
+        connection.close if timeout_exceeded?
+
         send_request
+
         response, body = receive_response
+
+        update_timeout response
+
         connection.close if response['Connection'] == 'close'
+
         Response.new response, body
       end
 
@@ -93,6 +104,24 @@ module HTTP
         logger.opt_data response
 
         return response, body
+      end
+
+      def update_timeout(response)
+        keep_alive = response.parse_header 'Keep-Alive'
+
+        timeout_seconds = keep_alive[:timeout]
+
+        return if timeout_seconds.nil?
+
+        http_timeout = clock.now + timeout_seconds
+
+        connection.http_timeout = http_timeout
+      end
+
+      def timeout_exceeded?
+        return false if connection.http_timeout.nil?
+
+        connection.http_timeout < clock.now
       end
 
       def request_message_length

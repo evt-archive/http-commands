@@ -40,6 +40,7 @@ module HTTP
             end
 
             connection = ::Connection::Client::Substitute.build
+            connection.extend HTTP::Commands::Connection
             connection.expect_write expected_request
             connection.expect_read expected_response
             connection
