@@ -55,7 +55,7 @@ module HTTP
       def call
         connection.extend Connection unless connection.is_a? Connection
 
-        connection.close if timeout_exceeded?
+        check_timeout
 
         send_request
 
@@ -104,6 +104,10 @@ module HTTP
         logger.opt_data response
 
         return response, body
+
+      rescue Errno::ECONNRESET => error
+        logger.error "Connection reset by peer (Action: #{action}, URI: #{uri.to_s.inspect}, Connection: #{connection.fileno}, Timeout: #{connection.http_timeout&.iso8601 3})"
+        raise error
       end
 
       def update_timeout(response)
@@ -118,10 +122,14 @@ module HTTP
         connection.http_timeout = http_timeout
       end
 
-      def timeout_exceeded?
+      def check_timeout
         return false if connection.http_timeout.nil?
 
-        connection.http_timeout < clock.now
+        if connection.http_timeout < clock.now
+          logger.warn "Timeout exceeded; reconnecting (Action: #{action}, URI: #{uri.to_s.inspect}, Connection: #{connection.fileno}, Timeout: #{connection.http_timeout.iso8601 3})"
+          connection.close
+          connection.http_timeout = nil
+        end
       end
 
       def request_message_length
