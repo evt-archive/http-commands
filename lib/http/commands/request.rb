@@ -126,7 +126,7 @@ module HTTP
         return false if connection.http_timeout.nil?
 
         if connection.http_timeout < clock.now
-          logger.warn "Timeout exceeded; reconnecting (Action: #{action}, URI: #{uri.to_s.inspect}, Connection: #{connection.fileno}, Timeout: #{connection.http_timeout.iso8601 3})"
+          logger.debug "Timeout exceeded; reconnecting (Action: #{action}, URI: #{uri.to_s.inspect}, Connection: #{connection.fileno}, Timeout: #{connection.http_timeout.iso8601 3})"
           connection.close
           connection.http_timeout = nil
         end
