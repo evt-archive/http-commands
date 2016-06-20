@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'http-commands'
-  s.version = '0.1.1.0'
+  s.version = '0.1.1.1'
   s.summary = 'Convenience abstractions for common HTTP operations, such as post and get'
   s.description = ' '
 
