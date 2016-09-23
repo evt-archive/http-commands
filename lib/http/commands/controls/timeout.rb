@@ -14,23 +14,21 @@ module HTTP
 
         module Within
           def self.example
-            ::Time.parse iso8601
+            Controls::Time::Offset::Raw.example offset, precision: 0
           end
 
-          def self.iso8601
-            seconds = Timeout.example - 1
-            ::Controls::Time::Elapsed.example seconds, precision: 0
+          def self.offset
+            Exceeds.offset - 1
           end
         end
 
         module Exceeds
           def self.example
-            ::Time.parse iso8601
+            Controls::Time::Offset::Raw.example offset, precision: 0
           end
 
-          def self.iso8601
-            seconds = Timeout.example
-            ::Controls::Time::Elapsed.example seconds, precision: 0
+          def self.offset
+            Timeout.example
           end
         end
       end

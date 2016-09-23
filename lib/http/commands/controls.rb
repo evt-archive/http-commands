@@ -1,4 +1,4 @@
-require 'controls'
+require 'clock/controls'
 
 require 'connection/controls'
 

@@ -3,7 +3,7 @@ require_relative '../bench_init'
 context "Request Connection Lifecycle" do
   action = HTTP::Commands::Controls::Action.example
   uri = HTTP::Commands::Controls::URI.example
-  control_time = HTTP::Commands::Controls::Time.example
+  control_time = HTTP::Commands::Controls::Time::Raw.example
 
   context "Shared connection" do
     connection = HTTP::Commands::Controls::Connection.example
@@ -68,7 +68,7 @@ context "Request Connection Lifecycle" do
       connection = HTTP::Commands::Controls::Dialogs::Connection.example expected_request, expected_response
 
       request = HTTP::Commands::Request.new connection, action, uri
-      request.clock.now = HTTP::Commands::Controls::Time.example
+      request.clock.now = HTTP::Commands::Controls::Time::Raw.example
 
       request.()
 
